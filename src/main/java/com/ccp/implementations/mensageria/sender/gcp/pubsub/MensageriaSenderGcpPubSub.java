@@ -5,18 +5,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.ccp.dependency.injection.CcpImplementation;
 import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PubsubMessage;
 
-@CcpImplementation
-public class CcpMensageriaSenderGcpPubSub implements CcpMensageriaSender {
+class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 
 	private static final Map<String, Publisher> publishers = new HashMap<>();
-	private static String PROJECT_ID = "jn-hmg";
+	private static String PROJECT_ID = System.getenv("tentant");
 
 
 	private static Publisher getPublisher(String topicId) {
