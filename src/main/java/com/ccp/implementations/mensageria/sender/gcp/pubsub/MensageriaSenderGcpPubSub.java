@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
+import com.ccp.especifications.mensageria.sender.CcpMensageriaTopic;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.ProjectTopicName;
@@ -13,11 +14,11 @@ import com.google.pubsub.v1.PubsubMessage;
 
 class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 
-	private static final Map<String, Publisher> publishers = new HashMap<>();
+	private static final Map<CcpMensageriaTopic, Publisher> publishers = new HashMap<>();
 	private static String PROJECT_ID = System.getenv("tentant");
 
 
-	private static Publisher getPublisher(String topicId) {
+	private static Publisher getPublisher(CcpMensageriaTopic topicId) {
 
 		if(publishers.containsKey(topicId)) {
 			Publisher publisher = publishers.get(topicId);
@@ -25,7 +26,7 @@ class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 		}
 	
 		
-		ProjectTopicName topico = ProjectTopicName.newBuilder().setProject(PROJECT_ID).setTopic(topicId).build();
+		ProjectTopicName topico = ProjectTopicName.newBuilder().setProject(PROJECT_ID).setTopic(topicId.name()).build();
 		
 		try {
 			Publisher publisher = null;
@@ -41,7 +42,7 @@ class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 		
 	
 	@Override
-	public void send(String json, String topic) {
+	public void send(String json, CcpMensageriaTopic topic) {
 		Publisher publisher = getPublisher(topic); 
 
 		try {
