@@ -49,7 +49,6 @@ class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 			ByteString data = ByteString.copyFrom(json.getBytes(StandardCharsets.UTF_8));
 			PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
 			publisher.publish(pubsubMessage);
-			System.out.println("publicou");
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
