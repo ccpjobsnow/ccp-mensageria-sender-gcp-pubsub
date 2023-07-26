@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ccp.decorators.CcpStringDecorator;
 import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
 import com.ccp.especifications.mensageria.sender.CcpMensageriaTopic;
 import com.google.api.gax.core.FixedCredentialsProvider;
@@ -23,7 +24,7 @@ class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 	private final FixedCredentialsProvider credentialsProvider;
 	public MensageriaSenderGcpPubSub() {
 		try {
-			InputStream credentialsFile = MensageriaSenderGcpPubSub.class.getClassLoader().getResource("credentials.json").openStream();
+			InputStream credentialsFile = new CcpStringDecorator("credentials.json").inputStreamFrom().classLoader();
 			GoogleCredentials credentials = GoogleCredentials.fromStream(credentialsFile);
 			this.credentialsProvider = FixedCredentialsProvider.create(credentials);
 		} catch (Exception e) {
