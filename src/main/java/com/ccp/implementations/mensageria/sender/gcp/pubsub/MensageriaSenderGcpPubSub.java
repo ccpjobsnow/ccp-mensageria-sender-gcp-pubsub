@@ -8,7 +8,6 @@ import java.util.Map;
 
 import com.ccp.decorators.CcpStringDecorator;
 import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
-import com.ccp.especifications.mensageria.sender.CcpMensageriaTopic;
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.ServiceOptions;
@@ -19,7 +18,7 @@ import com.google.pubsub.v1.PubsubMessage;
 
 class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 
-	private static final Map<CcpMensageriaTopic, Publisher> publishers = new HashMap<>();
+	private static final Map<Enum<?>, Publisher> publishers = new HashMap<>();
 	private static String PROJECT_ID = ServiceOptions.getDefaultProjectId();
 	private final FixedCredentialsProvider credentialsProvider;
 	public MensageriaSenderGcpPubSub() {
@@ -33,7 +32,7 @@ class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 
 	}
 
-	private Publisher getPublisher(CcpMensageriaTopic topicId) {
+	private Publisher getPublisher(Enum<?> topicId) {
 
 		if(publishers.containsKey(topicId)) {
 			Publisher publisher = publishers.get(topicId);
@@ -55,7 +54,7 @@ class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 		
 	
 	@Override
-	public void send(String json, CcpMensageriaTopic topic) {
+	public void send(String json, Enum<?> topic) {
 		Publisher publisher = this.getPublisher(topic); 
 
 		try {
