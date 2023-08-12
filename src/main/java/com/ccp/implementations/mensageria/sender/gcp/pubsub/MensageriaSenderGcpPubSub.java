@@ -1,68 +1,50 @@
 package com.ccp.implementations.mensageria.sender.gcp.pubsub;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Base64.Encoder;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import com.ccp.decorators.CcpStringDecorator;
+import com.ccp.decorators.CcpMapDecorator;
+import com.ccp.dependency.injection.CcpDependencyInject;
+import com.ccp.especifications.http.CcpHttpRequester;
+import com.ccp.especifications.main.authentication.CcpAuthenticationProvider;
 import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
-import com.google.api.gax.core.FixedCredentialsProvider;
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.ServiceOptions;
-import com.google.cloud.pubsub.v1.Publisher;
-import com.google.protobuf.ByteString;
-import com.google.pubsub.v1.ProjectTopicName;
-import com.google.pubsub.v1.PubsubMessage;
 
 class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 
-	private static final Map<Enum<?>, Publisher> publishers = new HashMap<>();
-	private static String PROJECT_ID = ServiceOptions.getDefaultProjectId();
-	private final FixedCredentialsProvider credentialsProvider;
-	public MensageriaSenderGcpPubSub() {
-		try {
-			InputStream credentialsFile = new CcpStringDecorator("credentials.json").inputStreamFrom().classLoader();
-			GoogleCredentials credentials = GoogleCredentials.fromStream(credentialsFile);
-			this.credentialsProvider = FixedCredentialsProvider.create(credentials);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	@CcpDependencyInject
+	private CcpHttpRequester ccpHttp;
 
+	@CcpDependencyInject
+	private CcpAuthenticationProvider authenticationProvider;
+
+	public void send(Enum<?> topicName , String... msgs) {
+		String projectId = ServiceOptions.getDefaultProjectId();
+		List<String> asList = Arrays.asList(msgs);
+		List<CcpMapDecorator> messages = asList.stream().map(message -> this.map(message)).collect(Collectors.toList());
+		String url = "https://pubsub.googleapis.com/v1/projects/"
+				+ projectId
+				+ "/topics/"
+				+ topicName
+				+ ":publish";
+		
+		String token = this.authenticationProvider.getJwtToken();
+		
+		CcpMapDecorator put = new CcpMapDecorator().put("messages", messages);
+		
+		this.ccpHttp.executeHttpRequest(url, "POST", new CcpMapDecorator().put("Authorization", "Bearer " + token), put.asJson());
 	}
 
-	private Publisher getPublisher(Enum<?> topicId) {
-
-		if(publishers.containsKey(topicId)) {
-			Publisher publisher = publishers.get(topicId);
-			return publisher;
-		}
-	
-		
-		ProjectTopicName topico = ProjectTopicName.newBuilder().setProject(PROJECT_ID).setTopic(topicId.name()).build();
-		
-		try {
-			Publisher publisher = null;
-			publisher = Publisher.newBuilder(topico).setCredentialsProvider(this.credentialsProvider).build();
-			publishers.put(topicId, publisher);
-			return publisher;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+	private CcpMapDecorator map(String message) {
+		Encoder encoder = Base64.getEncoder();
+		byte[] bytes = message.getBytes();
+		byte[] encode = encoder.encode(bytes);
+		String value = new String( encode);
+		CcpMapDecorator json = new CcpMapDecorator().put("data", value);
+		return json;
 	}
-		
-	
-	@Override
-	public void send(String json, Enum<?> topic) {
-		Publisher publisher = this.getPublisher(topic); 
 
-		try {
-			ByteString data = ByteString.copyFrom(json.getBytes(StandardCharsets.UTF_8));
-			PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
-			publisher.publish(pubsubMessage);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
 }
