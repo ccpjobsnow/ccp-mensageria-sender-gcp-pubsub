@@ -8,10 +8,11 @@ import java.util.stream.Collectors;
 
 import com.ccp.decorators.CcpMapDecorator;
 import com.ccp.dependency.injection.CcpDependencyInject;
+import com.ccp.especifications.http.CcpHttpHandler;
 import com.ccp.especifications.http.CcpHttpRequester;
+import com.ccp.especifications.http.CcpHttpResponseType;
 import com.ccp.especifications.main.authentication.CcpAuthenticationProvider;
 import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
-import com.google.cloud.ServiceOptions;
 
 class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 
@@ -22,7 +23,8 @@ class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 	private CcpAuthenticationProvider authenticationProvider;
 
 	public void send(Enum<?> topicName , String... msgs) {
-		String projectId = ServiceOptions.getDefaultProjectId();
+//		String projectId = ServiceOptions.getDefaultProjectId();
+		String projectId = "jn-hmg";
 		List<String> asList = Arrays.asList(msgs);
 		List<CcpMapDecorator> messages = asList.stream().map(message -> this.map(message)).collect(Collectors.toList());
 		String url = "https://pubsub.googleapis.com/v1/projects/"
@@ -33,9 +35,12 @@ class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 		
 		String token = this.authenticationProvider.getJwtToken();
 		
-		CcpMapDecorator put = new CcpMapDecorator().put("messages", messages);
+		CcpMapDecorator body = new CcpMapDecorator().put("messages", messages);
 		
-		this.ccpHttp.executeHttpRequest(url, "POST", new CcpMapDecorator().put("Authorization", "Bearer " + token), put.asJson());
+		CcpHttpHandler ccpHttpHandler = new CcpHttpHandler(200, this.ccpHttp);
+		CcpMapDecorator authorization = new CcpMapDecorator().put("Authorization", "Bearer " + token);
+		CcpMapDecorator response = ccpHttpHandler.executeHttpRequest(url, "POST", authorization, body, CcpHttpResponseType.singleRecord);
+		System.out.println(response);
 	}
 
 	private CcpMapDecorator map(String message) {
