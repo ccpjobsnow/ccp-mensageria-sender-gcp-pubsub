@@ -7,20 +7,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.ccp.decorators.CcpMapDecorator;
-import com.ccp.dependency.injection.CcpDependencyInject;
+import com.ccp.dependency.injection.CcpInstanceInjection;
 import com.ccp.especifications.http.CcpHttpHandler;
-import com.ccp.especifications.http.CcpHttpRequester;
 import com.ccp.especifications.http.CcpHttpResponseType;
 import com.ccp.especifications.main.authentication.CcpAuthenticationProvider;
 import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
 
 class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 
-	@CcpDependencyInject
-	private CcpHttpRequester ccpHttp;
-
-	@CcpDependencyInject
-	private CcpAuthenticationProvider authenticationProvider;
+	private CcpAuthenticationProvider authenticationProvider = CcpInstanceInjection.getInstance(CcpAuthenticationProvider.class);
 
 	public void send(Enum<?> topicName , String... msgs) {
 //		String projectId = ServiceOptions.getDefaultProjectId();
@@ -37,7 +32,7 @@ class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 		
 		CcpMapDecorator body = new CcpMapDecorator().put("messages", messages);
 		
-		CcpHttpHandler ccpHttpHandler = new CcpHttpHandler(200, this.ccpHttp);
+		CcpHttpHandler ccpHttpHandler = new CcpHttpHandler(200);
 		CcpMapDecorator authorization = new CcpMapDecorator().put("Authorization", "Bearer " + token);
 		CcpMapDecorator response = ccpHttpHandler.executeHttpRequest(url, "POST", authorization, body, CcpHttpResponseType.singleRecord);
 		System.out.println(response);

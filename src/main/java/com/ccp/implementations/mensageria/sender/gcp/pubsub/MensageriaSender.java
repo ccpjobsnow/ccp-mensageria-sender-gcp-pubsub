@@ -1,11 +1,11 @@
 package com.ccp.implementations.mensageria.sender.gcp.pubsub;
 
-import com.ccp.dependency.injection.CcpModuleExporter;
+import com.ccp.dependency.injection.CcpInstanceProvider;
 
-public class MensageriaSender implements CcpModuleExporter {
+public class MensageriaSender implements CcpInstanceProvider {
 
 	@Override
-	public Object export() {
+	public Object getInstance() {
 		return new MensageriaSenderGcpPubSub();
 	}
 
