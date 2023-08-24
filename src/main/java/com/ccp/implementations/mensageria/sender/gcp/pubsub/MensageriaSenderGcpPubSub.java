@@ -15,7 +15,6 @@ import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
 
 class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 
-	private CcpAuthenticationProvider authenticationProvider = CcpInstanceInjection.getInstance(CcpAuthenticationProvider.class);
 
 	public void send(Enum<?> topicName , String... msgs) {
 //		String projectId = ServiceOptions.getDefaultProjectId();
@@ -28,7 +27,8 @@ class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 				+ topicName
 				+ ":publish";
 		
-		String token = this.authenticationProvider.getJwtToken();
+		CcpAuthenticationProvider authenticationProvider = CcpInstanceInjection.getInstance(CcpAuthenticationProvider.class);
+		String token = authenticationProvider.getJwtToken();
 		
 		CcpMapDecorator body = new CcpMapDecorator().put("messages", messages);
 		
