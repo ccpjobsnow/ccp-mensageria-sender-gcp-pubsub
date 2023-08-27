@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.ccp.decorators.CcpMapDecorator;
-import com.ccp.dependency.injection.CcpInstanceInjection;
+import com.ccp.dependency.injection.CcpDependencyInjection;
 import com.ccp.especifications.http.CcpHttpHandler;
 import com.ccp.especifications.http.CcpHttpResponseType;
 import com.ccp.especifications.main.authentication.CcpAuthenticationProvider;
@@ -27,7 +27,7 @@ class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
 				+ topicName
 				+ ":publish";
 		
-		CcpAuthenticationProvider authenticationProvider = CcpInstanceInjection.getInstance(CcpAuthenticationProvider.class);
+		CcpAuthenticationProvider authenticationProvider = CcpDependencyInjection.getDependency(CcpAuthenticationProvider.class);
 		String token = authenticationProvider.getJwtToken();
 		
 		CcpMapDecorator body = new CcpMapDecorator().put("messages", messages);
