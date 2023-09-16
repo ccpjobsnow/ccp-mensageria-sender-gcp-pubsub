@@ -5,7 +5,7 @@ import com.ccp.dependency.injection.CcpDependencyInjection;
 import com.ccp.especifications.http.CcpHttpRequester;
 import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
 
-public class MensageriaSenderGcpPubSubLocal  implements CcpMensageriaSender {
+public class LocalEndpointMensageriaSender  implements CcpMensageriaSender {
 
 	@Override
 	public void send(Enum<?> topic, String... msgs) {

@@ -13,7 +13,7 @@ import com.ccp.especifications.http.CcpHttpResponseType;
 import com.ccp.especifications.main.authentication.CcpAuthenticationProvider;
 import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
 
-class MensageriaSenderGcpPubSub implements CcpMensageriaSender {
+class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 
 
 	public void send(Enum<?> topicName , String... msgs) {
