@@ -18,8 +18,7 @@ public class LocalEndpointMensageriaSender  implements CcpMensageriaSender {
 	
 	private void send(Enum<?> topic, String msg) {
 		CcpHttpRequester dependency = CcpDependencyInjection.getDependency(CcpHttpRequester.class);
-		dependency.executeHttpRequest("http://localhost:8081/" + topic.name() + "/testing", "POST", 
-				CcpConstants.EMPTY_JSON, 
-				msg, 200);
+		String url = "http://localhost:8081/" + topic.name() + "/testing";
+		dependency.executeHttpRequest(url, "POST", CcpConstants.EMPTY_JSON, msg, 200);
 	}
 }
