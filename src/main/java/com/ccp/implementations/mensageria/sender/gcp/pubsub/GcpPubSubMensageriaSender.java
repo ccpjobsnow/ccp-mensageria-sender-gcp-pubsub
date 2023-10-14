@@ -34,8 +34,7 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 		
 		CcpHttpHandler ccpHttpHandler = new CcpHttpHandler(200);
 		CcpMapDecorator authorization = new CcpMapDecorator().put("Authorization", "Bearer " + token);
-		CcpMapDecorator response = ccpHttpHandler.executeHttpRequest(url, "POST", authorization, body, CcpHttpResponseType.singleRecord);
-		System.out.println(response);
+		ccpHttpHandler.executeHttpRequest(url, "POST", authorization, body, CcpHttpResponseType.singleRecord);
 	}
 
 	private CcpMapDecorator map(String message) {
