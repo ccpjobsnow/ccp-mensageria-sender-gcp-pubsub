@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.ccp.decorators.CcpMapDecorator;
+import com.ccp.constantes.CcpConstants;
+import com.ccp.decorators.CcpJsonRepresentation;
 import com.ccp.dependency.injection.CcpDependencyInjection;
 import com.ccp.especifications.http.CcpHttpHandler;
 import com.ccp.especifications.http.CcpHttpResponseType;
@@ -64,7 +65,7 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 
 	public void send1(Enum<?> topicName , String... msgs) {
 		List<String> asList = Arrays.asList(msgs);
-		List<CcpMapDecorator> messages = asList.stream().map(message -> this.map(message)).collect(Collectors.toList());
+		List<CcpJsonRepresentation> messages = asList.stream().map(message -> this.map(message)).collect(Collectors.toList());
 		String url = "https://pubsub.googleapis.com/v1/projects/"
 				+ PROJECT_ID
 				+ "/topics/"
@@ -74,19 +75,19 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 		CcpAuthenticationProvider authenticationProvider = CcpDependencyInjection.getDependency(CcpAuthenticationProvider.class);
 		String token = authenticationProvider.getJwtToken();
 		
-		CcpMapDecorator body = new CcpMapDecorator().put("messages", messages);
+		CcpJsonRepresentation body = CcpConstants.EMPTY_JSON.put("messages", messages);
 		
 		CcpHttpHandler ccpHttpHandler = new CcpHttpHandler(200);
-		CcpMapDecorator authorization = new CcpMapDecorator().put("Authorization", "Bearer " + token);
+		CcpJsonRepresentation authorization = CcpConstants.EMPTY_JSON.put("Authorization", "Bearer " + token);
 		ccpHttpHandler.executeHttpRequest(url, "POST", authorization, body, CcpHttpResponseType.singleRecord);
 	}
 
-	private CcpMapDecorator map(String message) {
+	private CcpJsonRepresentation map(String message) {
 		Encoder encoder = Base64.getEncoder();
 		byte[] bytes = message.getBytes();
 		byte[] encode = encoder.encode(bytes);
 		String value = new String( encode);
-		CcpMapDecorator json = new CcpMapDecorator().put("data", value);
+		CcpJsonRepresentation json = CcpConstants.EMPTY_JSON.put("data", value);
 		return json;
 	}
 }
