@@ -7,7 +7,7 @@ import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
 
 public class LocalEndpointMensageriaSender  implements CcpMensageriaSender {
 
-	@Override
+	
 	public void send(String topic, String... msgs) {
 		
 		for (String msg : msgs) {

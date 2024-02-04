@@ -94,7 +94,7 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 				// Add an asynchronous callback to handle success / failure
 				ApiFutures.addCallback(future, new ApiFutureCallback<String>() {
 
-					@Override
+					
 					public void onFailure(Throwable throwable) {
 						if (throwable instanceof ApiException) {
 							ApiException apiException = ((ApiException) throwable);
@@ -105,7 +105,7 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 						System.out.println("Error publishing message : " + message);
 					}
 
-					@Override
+					
 					public void onSuccess(String messageId) {
 						// Once published, returns server-assigned message ids (unique within the topic)
 						System.out.println("Published message ID: " + messageId);
