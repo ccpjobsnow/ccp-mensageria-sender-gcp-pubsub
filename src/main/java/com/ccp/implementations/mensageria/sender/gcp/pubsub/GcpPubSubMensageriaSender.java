@@ -36,7 +36,7 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 //	private static String PROJECT_ID = ServiceOptions.getDefaultProjectId();;
 	private static String PROJECT_ID = "jn-hmg";
 
-	private static final Map<String, Publisher> publishers = new HashMap<>();
+	private static final Map<String, Publisher> publishers = new HashMap();
 
 	private Publisher getPublisher(String topicName) {
 
