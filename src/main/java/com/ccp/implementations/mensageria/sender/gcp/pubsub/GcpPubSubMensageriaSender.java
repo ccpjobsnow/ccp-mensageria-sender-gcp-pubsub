@@ -21,6 +21,7 @@ import com.ccp.especifications.http.CcpHttpHandler;
 import com.ccp.especifications.http.CcpHttpResponseType;
 import com.ccp.especifications.main.authentication.CcpAuthenticationProvider;
 import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
+import com.ccp.especifications.mensageria.sender.CcpTopic;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
@@ -75,9 +76,9 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 		}
 	}
 
-	public void send(String topicId, String...msgs)
+	public void send(CcpTopic topicId, String...msgs)
 			{
-		Publisher publisher = getPublisher(topicId);
+		Publisher publisher = getPublisher(topicId.getTopicName());
 
 		try {
 
