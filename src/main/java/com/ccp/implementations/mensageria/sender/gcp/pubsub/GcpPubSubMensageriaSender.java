@@ -124,7 +124,6 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 				publisher.shutdown();
 				publisher.awaitTermination(1, TimeUnit.MINUTES);
 			} catch (Exception e) {
-				// TODO: handle exception
 			}
 		}
 	}
