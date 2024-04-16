@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Base64;
-import java.util.Base64.Encoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,10 +144,7 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 	}
 
 	private CcpJsonRepresentation map(String message) {
-		Encoder encoder = Base64.getEncoder();
-		byte[] bytes = message.getBytes();
-		byte[] encode = encoder.encode(bytes);
-		String value = new String(encode);
+		String value = new CcpStringDecorator(message).text().asBase64();
 		CcpJsonRepresentation json = CcpConstants.EMPTY_JSON.put("data", value);
 		return json;
 	}
