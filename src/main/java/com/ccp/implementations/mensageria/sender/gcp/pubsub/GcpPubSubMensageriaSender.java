@@ -19,7 +19,6 @@ import com.ccp.especifications.http.CcpHttpHandler;
 import com.ccp.especifications.http.CcpHttpResponseType;
 import com.ccp.especifications.main.authentication.CcpAuthenticationProvider;
 import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
-import com.ccp.especifications.mensageria.sender.CcpTopic;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
@@ -74,9 +73,9 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 		}
 	}
 
-	public void send(CcpTopic topicId, String...msgs)
+	public void send(String topicId, String...msgs)
 			{
-		Publisher publisher = getPublisher(topicId.getTopicName());
+		Publisher publisher = getPublisher(topicId);
 
 		try {
 
@@ -140,7 +139,7 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 
 		CcpHttpHandler ccpHttpHandler = new CcpHttpHandler(200);
 		CcpJsonRepresentation authorization = CcpConstants.EMPTY_JSON.put("Authorization", "Bearer " + token);
-		ccpHttpHandler.executeHttpRequest(url, "POST", authorization, body, CcpHttpResponseType.singleRecord);
+		ccpHttpHandler.executeHttpRequest("sendPubsubMessage", url, "POST", authorization, body, CcpHttpResponseType.singleRecord);
 	}
 
 	private CcpJsonRepresentation map(String message) {
