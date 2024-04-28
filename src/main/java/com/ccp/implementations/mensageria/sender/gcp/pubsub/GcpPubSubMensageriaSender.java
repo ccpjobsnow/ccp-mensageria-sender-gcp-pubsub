@@ -143,7 +143,7 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 	}
 
 	private CcpJsonRepresentation map(String message) {
-		String value = new CcpStringDecorator(message).text().asBase64();
+		String value = new CcpStringDecorator(message).text().asBase64().content;
 		CcpJsonRepresentation json = CcpConstants.EMPTY_JSON.put("data", value);
 		return json;
 	}
