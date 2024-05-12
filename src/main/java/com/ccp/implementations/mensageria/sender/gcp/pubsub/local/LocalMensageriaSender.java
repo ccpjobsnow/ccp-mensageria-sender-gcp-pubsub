@@ -15,6 +15,7 @@ import com.ccp.implementations.instant.messenger.telegram.CcpTelegramInstantMess
 import com.ccp.implementations.json.gson.CcpGsonJsonHandler;
 import com.ccp.jn.async.business.factory.CcpJnAsyncBusinessFactory;
 import com.ccp.jn.async.business.support.JnAsyncBusinessNotifyError;
+import com.jn.commons.entities.JnEntityAsyncTask;
 
 public class LocalMensageriaSender  implements CcpMensageriaSender {
 
@@ -45,6 +46,6 @@ public class LocalMensageriaSender  implements CcpMensageriaSender {
 	
 	private void send(String topic, String msg) {
 		CcpJsonRepresentation md = new CcpJsonRepresentation(msg);
-		CcpAsyncTask.executeProcess(topic, md, JnAsyncBusinessNotifyError.INSTANCE);
+		CcpAsyncTask.executeProcess(topic, md, JnEntityAsyncTask.INSTANCE, JnAsyncBusinessNotifyError.INSTANCE);
 	}
 }
