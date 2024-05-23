@@ -2,6 +2,7 @@ package com.ccp.implementations.mensageria.sender.gcp.pubsub.local;
 
 import com.ccp.decorators.CcpJsonRepresentation;
 import com.ccp.dependency.injection.CcpDependencyInjection;
+import com.ccp.especifications.db.utils.CcpEntity;
 import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
 import com.ccp.exceptions.process.CcpAsyncTask;
 import com.ccp.implementations.db.bulk.elasticsearch.CcpElasticSerchDbBulk;
@@ -17,35 +18,29 @@ import com.ccp.jn.async.business.factory.CcpJnAsyncBusinessFactory;
 import com.ccp.jn.async.business.support.JnAsyncBusinessNotifyError;
 import com.jn.commons.entities.JnEntityAsyncTask;
 
-public class LocalMensageriaSender  implements CcpMensageriaSender {
+public class LocalMensageriaSender implements CcpMensageriaSender {
 
 	public LocalMensageriaSender() {
-		CcpDependencyInjection.loadAllDependencies(
-				new CcpElasticSearchQueryExecutor(),
-				new CcpTelegramInstantMessenger(),
-				new CcpJnAsyncBusinessFactory(),
-				new CcpElasticSearchDbRequest(),
-				new CcpSendGridEmailSender(),
-				new CcpElasticSerchDbBulk(),
-				new CcpElasticSearchCrud(),
-				new CcpGsonJsonHandler(),
-				new CcpApacheMimeHttp(),
-				new CcpGcpFileBucket()  
-			
-	);
+		CcpDependencyInjection.loadAllDependencies(new CcpElasticSearchQueryExecutor(),
+				new CcpTelegramInstantMessenger(), new CcpJnAsyncBusinessFactory(), new CcpElasticSearchDbRequest(),
+				new CcpSendGridEmailSender(), new CcpElasticSerchDbBulk(), new CcpElasticSearchCrud(),
+				new CcpGsonJsonHandler(), new CcpApacheMimeHttp(), new CcpGcpFileBucket()
+
+		);
 
 	}
-	
+	@Override
 	public void send(String topic, String... msgs) {
-		
+
 		for (String msg : msgs) {
-			new Thread(() -> this.send(topic, msg)).start();
+//			new Thread(() -> CcpAsyncTask.executeProcess(topic, new CcpJsonRepresentation(msg), JnEntityAsyncTask.INSTANCE, JnAsyncBusinessNotifyError.INSTANCE)).start();
+			CcpAsyncTask.executeProcess(topic, new CcpJsonRepresentation(msg), JnEntityAsyncTask.INSTANCE,
+					JnAsyncBusinessNotifyError.INSTANCE);
 		}
 	}
 
-	
-	private void send(String topic, String msg) {
+	public void send(String topic, CcpEntity entity, String... msg) {
 		CcpJsonRepresentation md = new CcpJsonRepresentation(msg);
-		CcpAsyncTask.executeProcess(topic, md, JnEntityAsyncTask.INSTANCE, JnAsyncBusinessNotifyError.INSTANCE);
+		CcpAsyncTask.executeProcess(topic, md, entity, JnAsyncBusinessNotifyError.INSTANCE);
 	}
 }

@@ -147,4 +147,5 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 		CcpJsonRepresentation json = CcpConstants.EMPTY_JSON.put("data", value);
 		return json;
 	}
+
 }
