@@ -2,9 +2,7 @@ package com.ccp.implementations.mensageria.sender.gcp.pubsub.local;
 
 import com.ccp.decorators.CcpJsonRepresentation;
 import com.ccp.dependency.injection.CcpDependencyInjection;
-import com.ccp.especifications.db.utils.CcpEntity;
 import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
-import com.ccp.exceptions.process.CcpAsyncTask;
 import com.ccp.implementations.db.bulk.elasticsearch.CcpElasticSerchDbBulk;
 import com.ccp.implementations.db.crud.elasticsearch.CcpElasticSearchCrud;
 import com.ccp.implementations.db.query.elasticsearch.CcpElasticSearchQueryExecutor;
@@ -16,6 +14,7 @@ import com.ccp.implementations.instant.messenger.telegram.CcpTelegramInstantMess
 import com.ccp.implementations.json.gson.CcpGsonJsonHandler;
 import com.ccp.jn.async.business.factory.CcpJnAsyncBusinessFactory;
 import com.ccp.jn.async.business.support.JnAsyncBusinessNotifyError;
+import com.ccp.jn.async.commons.JnAsyncMensageriaSender;
 import com.jn.commons.entities.JnEntityAsyncTask;
 
 public class LocalMensageriaSender implements CcpMensageriaSender {
@@ -29,18 +28,14 @@ public class LocalMensageriaSender implements CcpMensageriaSender {
 		);
 
 	}
-	@Override
+
 	public void send(String topic, String... msgs) {
 
 		for (String msg : msgs) {
-//			new Thread(() -> CcpAsyncTask.executeProcess(topic, new CcpJsonRepresentation(msg), JnEntityAsyncTask.INSTANCE, JnAsyncBusinessNotifyError.INSTANCE)).start();
-			CcpAsyncTask.executeProcess(topic, new CcpJsonRepresentation(msg), JnEntityAsyncTask.INSTANCE,
-					JnAsyncBusinessNotifyError.INSTANCE);
+			CcpJsonRepresentation messageDetails = new CcpJsonRepresentation(msg);
+			new Thread(() -> JnAsyncMensageriaSender.INSTANCE.executeProcesss(JnEntityAsyncTask.INSTANCE, topic,
+					messageDetails, JnAsyncBusinessNotifyError.INSTANCE)).start();
 		}
 	}
 
-	public void send(String topic, CcpEntity entity, String... msg) {
-		CcpJsonRepresentation md = new CcpJsonRepresentation(msg);
-		CcpAsyncTask.executeProcess(topic, md, entity, JnAsyncBusinessNotifyError.INSTANCE);
-	}
 }
