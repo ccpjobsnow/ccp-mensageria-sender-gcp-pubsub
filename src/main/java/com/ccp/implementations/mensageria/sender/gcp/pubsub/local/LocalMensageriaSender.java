@@ -3,6 +3,7 @@ package com.ccp.implementations.mensageria.sender.gcp.pubsub.local;
 import com.ccp.decorators.CcpJsonRepresentation;
 import com.ccp.dependency.injection.CcpDependencyInjection;
 import com.ccp.especifications.mensageria.sender.CcpMensageriaSender;
+import com.ccp.exceptions.process.CcpAsyncTask;
 import com.ccp.implementations.db.bulk.elasticsearch.CcpElasticSerchDbBulk;
 import com.ccp.implementations.db.crud.elasticsearch.CcpElasticSearchCrud;
 import com.ccp.implementations.db.query.elasticsearch.CcpElasticSearchQueryExecutor;
@@ -13,9 +14,6 @@ import com.ccp.implementations.http.apache.mime.CcpApacheMimeHttp;
 import com.ccp.implementations.instant.messenger.telegram.CcpTelegramInstantMessenger;
 import com.ccp.implementations.json.gson.CcpGsonJsonHandler;
 import com.ccp.jn.async.business.factory.CcpJnAsyncBusinessFactory;
-import com.ccp.jn.async.business.support.JnAsyncBusinessNotifyError;
-import com.ccp.jn.async.commons.JnAsyncMensageriaSender;
-import com.jn.commons.entities.JnEntityAsyncTask;
 
 public class LocalMensageriaSender implements CcpMensageriaSender {
 
@@ -33,8 +31,8 @@ public class LocalMensageriaSender implements CcpMensageriaSender {
 
 		for (String msg : msgs) {
 			CcpJsonRepresentation messageDetails = new CcpJsonRepresentation(msg);
-			new Thread(() -> JnAsyncMensageriaSender.INSTANCE.executeProcesss(JnEntityAsyncTask.INSTANCE, topic,
-					messageDetails, JnAsyncBusinessNotifyError.INSTANCE)).start();
+			new Thread(() -> CcpAsyncTask.getProcess(topic).apply(messageDetails)).start();
+//			CcpAsyncTask.getProcess(topic).apply(messageDetails);
 		}
 	}
 
