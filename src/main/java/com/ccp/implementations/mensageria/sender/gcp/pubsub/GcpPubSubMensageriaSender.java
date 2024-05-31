@@ -14,6 +14,7 @@ import com.ccp.constantes.CcpConstants;
 import com.ccp.decorators.CcpInputStreamDecorator;
 import com.ccp.decorators.CcpJsonRepresentation;
 import com.ccp.decorators.CcpStringDecorator;
+import com.ccp.decorators.CcpTimeDecorator;
 import com.ccp.dependency.injection.CcpDependencyInjection;
 import com.ccp.especifications.http.CcpHttpHandler;
 import com.ccp.especifications.http.CcpHttpResponseType;
@@ -97,16 +98,16 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 						if (throwable instanceof ApiException) {
 							ApiException apiException = ((ApiException) throwable);
 							// details on the API exception
-							System.out.println(apiException.getStatusCode().getCode());
-							System.out.println(apiException.isRetryable());
+							CcpTimeDecorator.log(apiException.getStatusCode().getCode());
+							CcpTimeDecorator.log(apiException.isRetryable());
 						}
-						System.out.println("Error publishing message : " + message);
+						CcpTimeDecorator.log("Error publishing message : " + message);
 					}
 
 					
 					public void onSuccess(String messageId) {
 						// Once published, returns server-assigned message ids (unique within the topic)
-						System.out.println("Published message ID: " + messageId);
+						CcpTimeDecorator.log("Published message ID: " + messageId);
 					}
 				}, MoreExecutors.directExecutor());
 			}
