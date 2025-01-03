@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.ccp.constantes.CcpConstants;
+import com.ccp.constantes.CcpOtherConstants;
 import com.ccp.decorators.CcpInputStreamDecorator;
 import com.ccp.decorators.CcpJsonRepresentation;
 import com.ccp.decorators.CcpStringDecorator;
@@ -136,16 +136,16 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 				.getDependency(CcpAuthenticationProvider.class);
 		String token = authenticationProvider.getJwtToken();
 
-		CcpJsonRepresentation body = CcpConstants.EMPTY_JSON.put("messages", messages);
+		CcpJsonRepresentation body = CcpOtherConstants.EMPTY_JSON.put("messages", messages);
 
 		CcpHttpHandler ccpHttpHandler = new CcpHttpHandler(200);
-		CcpJsonRepresentation authorization = CcpConstants.EMPTY_JSON.put("Authorization", "Bearer " + token);
+		CcpJsonRepresentation authorization = CcpOtherConstants.EMPTY_JSON.put("Authorization", "Bearer " + token);
 		ccpHttpHandler.executeHttpRequest("sendPubsubMessage", url, "POST", authorization, body, CcpHttpResponseType.singleRecord);
 	}
 
 	private CcpJsonRepresentation map(String message) {
 		String value = new CcpStringDecorator(message).text().asBase64().content;
-		CcpJsonRepresentation json = CcpConstants.EMPTY_JSON.put("data", value);
+		CcpJsonRepresentation json = CcpOtherConstants.EMPTY_JSON.put("data", value);
 		return json;
 	}
 
