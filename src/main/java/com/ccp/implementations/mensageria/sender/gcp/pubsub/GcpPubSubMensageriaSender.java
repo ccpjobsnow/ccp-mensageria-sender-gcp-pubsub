@@ -14,7 +14,6 @@ import com.ccp.constantes.CcpOtherConstants;
 import com.ccp.decorators.CcpInputStreamDecorator;
 import com.ccp.decorators.CcpJsonRepresentation;
 import com.ccp.decorators.CcpStringDecorator;
-import com.ccp.decorators.CcpTimeDecorator;
 import com.ccp.dependency.injection.CcpDependencyInjection;
 import com.ccp.especifications.http.CcpHttpHandler;
 import com.ccp.especifications.http.CcpHttpResponseType;
@@ -60,7 +59,7 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 		return publisher;
 	}
 
-	public void send2(Enum<?> topicName, String... msgs) {
+	public CcpMensageriaSender send2(Enum<?> topicName, String... msgs) {
 		Publisher publisher = getPublisher(topicName.name());
 
 		try {
@@ -69,12 +68,13 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 				PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
 				publisher.publish(pubsubMessage);
 			}
+			return this;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void send(String topicId, String...msgs)
+	public CcpMensageriaSender send(String topicId, String...msgs)
 			{
 		Publisher publisher = getPublisher(topicId);
 
@@ -96,27 +96,28 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 					
 					public void onFailure(Throwable throwable) {
 						if (throwable instanceof ApiException) {
-							ApiException apiException = ((ApiException) throwable);
+//							ApiException apiException = ((ApiException) throwable);
 							// details on the API exception
-							CcpTimeDecorator.log(apiException.getStatusCode().getCode());
-							CcpTimeDecorator.log(apiException.isRetryable());
+//							CcpTimeDecorator.appendLog(apiException.getStatusCode().getCode());
+//							CcpTimeDecorator.appendLog(apiException.isRetryable());
 						}
-						CcpTimeDecorator.log("Error publishing message : " + message);
+//						CcpTimeDecorator.appendLog("Error publishing message : " + message);
 					}
 
 					
 					public void onSuccess(String messageId) {
 						// Once published, returns server-assigned message ids (unique within the topic)
-						CcpTimeDecorator.log("Published message ID: " + messageId);
+//						CcpTimeDecorator.appendLog("Published message ID: " + messageId);
 					}
 				}, MoreExecutors.directExecutor());
 			}
+			return this;
 		} catch(Throwable e) {
-			
+			return this;
 		}
 		finally {
 			if (publisher == null) {
-				return;
+				return this;
 			}
 			try {
 				publisher.shutdown();
@@ -126,7 +127,7 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 		}
 	}
 
-	public void send1(Enum<?> topicName, String... msgs) {
+	public CcpMensageriaSender send1(Enum<?> topicName, String... msgs) {
 		List<String> asList = Arrays.asList(msgs);
 		List<CcpJsonRepresentation> messages = asList.stream().map(message -> this.map(message))
 				.collect(Collectors.toList());
@@ -141,6 +142,7 @@ class GcpPubSubMensageriaSender implements CcpMensageriaSender {
 		CcpHttpHandler ccpHttpHandler = new CcpHttpHandler(200);
 		CcpJsonRepresentation authorization = CcpOtherConstants.EMPTY_JSON.put("Authorization", "Bearer " + token);
 		ccpHttpHandler.executeHttpRequest("sendPubsubMessage", url, "POST", authorization, body, CcpHttpResponseType.singleRecord);
+		return this;
 	}
 
 	private CcpJsonRepresentation map(String message) {
